@@ -2,24 +2,92 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SQL Injection Detector</title>
+    <title>Post Your Comment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+            color: #333;
+            padding: 40px;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+        }
+
+        form {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3498db;
+        }
+
+        .result, .comments {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment {
+            background: #f1f8ff;
+            padding: 10px;
+            border-left: 4px solid #2980b9;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Enter Input to Validate</h1>
+    <h1>Write Your Comment</h1>
 
     <form method="POST">
         {% csrf_token %}
-        <input type="text" name="name" required>
-        <button type="submit">Check</button>
+        <input type="text" name="name" placeholder="Enter your comment" required>
+        <button type="submit">Submit</button>
     </form>
 
     {% if result %}
-        <h2>Result:</h2>
-        <p>{{ result }}</p>
+        <div class="result">
+            <h2>Result:</h2>
+            <p>{{ val }}</p>
+            <p>{{ result }}</p>
+        </div>
     {% endif %}
-    {% if val %}
-    <h2>Data:</h2>
-    <p>{{ val }}</p>
-    {% endif %}
+
+   <!-- {% if val %}
+        <div class="comments">
+            <h2>All Comments:</h2>
+            {% for comment in val %}
+                <div class="comment">{{ comment }}</div>
+            {% empty %}
+                <p>No comments yet.</p>
+            {% endfor %}
+        </div>
+    {% endif %} -->
 </body>
 </html>

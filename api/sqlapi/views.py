@@ -2,13 +2,13 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from . import models
 from django.contrib import messages
 # Create your views here.
 import pickle
 import keras
 import tensorflow as tf
 from tensorflow import keras
-
 mymodel = tf.keras.models.load_model('sqlidetector.h5')
 myvectorizer = pickle.load(open("vectorizer_additional_data", 'rb'))
 
@@ -43,6 +43,7 @@ def clean_data(input_val):
     input_val = input_val.replace("7659", 'numeric')
     input_val = input_val.replace(" 37 ", ' numeric ')
     input_val = input_val.replace(" 45 ", ' numeric ')
+    #print(input_val)
     return input_val
 
 
@@ -82,23 +83,30 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f"Welcome back, {user.username}!")
-            return redirect('dashboar')  # create dashboard later
+            return redirect('input')  # create dashboard later
         else:
             messages.error(request, "Invalid username or password.")
             return redirect('login')
 
     return render(request, 'login.html')
 
+
 def user_input_view(request):
     result = None  # Default result
     val = None
     if request.method == 'POST':
         name = request.POST.get('name')
-        val = name
+        user = request.user.username
+        print(user)
+        p = models.post(username=user,data=name)
+        p.save()
         # Clean the input
         cleaned_input = clean_data(name)
-        cleaned_input = [cleaned_input]  # model expects list
-
+        val = cleaned_input
+        cleaned_input = [cleaned_input] 
+         # model expects list
+        resource = {"user":user,"data":name}
+        print(cleaned_input)
         # Vectorize the input
         input_val = myvectorizer.transform(cleaned_input).toarray()
 
@@ -107,11 +115,18 @@ def user_input_view(request):
 
         # Interpret prediction
         if prediction > 0.5:
+            insertalert(resource)
             result = "⚠️ ALERT: Possible SQL Injection detected!"
         else:
             result = "✅ Safe input."
 
     return render(request, 'input.html', {'result': result,'val':val,})
+
+
+def insertalert(resource):
+    a = models.alert(username=resource["user"],data=resource["data"])
+    a.save()
+
 
 
 
