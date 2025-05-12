@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SQL Injection Detector</title>
+</head>
+<body>
+    <h1>Enter Input to Validate</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="name" required>
+        <button type="submit">Check</button>
+    </form>
+</body>
+</html>

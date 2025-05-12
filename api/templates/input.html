@@ -63,31 +63,28 @@
     </style>
 </head>
 <body>
-    <h1>Write Your Comment</h1>
+    <body>
+    <h1>All Comments</h1>
+    
+    {% if comments %}
+        <ul>
+            {% for comment in comments %}
+                <li><strong>{{ comment.username }}:</strong> {{ comment.data }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No comments yet.</p>
+    {% endif %}
 
+    <hr>
+
+    <h2>Write Your Comment</h2>
     <form method="POST">
         {% csrf_token %}
         <input type="text" name="name" placeholder="Enter your comment" required>
         <button type="submit">Submit</button>
     </form>
+</body>
 
-    {% if result %}
-        <div class="result">
-            <h2>Result:</h2>
-            <p>{{ val }}</p>
-            <p>{{ result }}</p>
-        </div>
-    {% endif %}
-
-   <!-- {% if val %}
-        <div class="comments">
-            <h2>All Comments:</h2>
-            {% for comment in val %}
-                <div class="comment">{{ comment }}</div>
-            {% empty %}
-                <p>No comments yet.</p>
-            {% endfor %}
-        </div>
-    {% endif %} -->
 </body>
 </html>

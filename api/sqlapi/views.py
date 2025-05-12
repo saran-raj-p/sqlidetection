@@ -9,6 +9,10 @@ import pickle
 import keras
 import tensorflow as tf
 from tensorflow import keras
+
+import logging
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 mymodel = tf.keras.models.load_model('sqlidetector.h5')
 myvectorizer = pickle.load(open("vectorizer_additional_data", 'rb'))
 
@@ -92,8 +96,7 @@ def login_view(request):
 
 
 def user_input_view(request):
-    result = None  # Default result
-    val = None
+    comments=None
     if request.method == 'POST':
         name = request.POST.get('name')
         user = request.user.username
@@ -112,21 +115,51 @@ def user_input_view(request):
 
         # Predict
         prediction = mymodel.predict(input_val)
-
+        comments = models.post.objects.all().order_by('-id')
         # Interpret prediction
         if prediction > 0.5:
             insertalert(resource)
-            result = "⚠️ ALERT: Possible SQL Injection detected!"
-        else:
-            result = "✅ Safe input."
-
-    return render(request, 'input.html', {'result': result,'val':val,})
+            
+        
+            
+    
+    return render(request, 'input.html',{'comments':comments})
 
 
 def insertalert(resource):
     a = models.alert(username=resource["user"],data=resource["data"])
     a.save()
+    try:
+        user = User.objects.get(username=resource["user"])
 
+        # Send alert email
+        context_data = {
+            "username": resource["user"],
+            "data": resource["data"],
+        }
+        send_email(context_data)
 
+    except User.DoesNotExist:
+        logger.warning(f"User {resource['user']} not found. Email not sent.")
+
+logger = logging.getLogger(__name__)
+
+def send_email(context_data):
+    try:
+        to_email = ["ssaranraj803@gmail.com"]
+        subject = "⚠️ SQL Injection Alert"
+        message = render_to_string('mail.html', context_data)
+        email = EmailMessage(
+            subject,
+            message,
+            to=to_email,
+        )
+        email.content_subtype = "html"  # Set content type to HTML
+        email.send()
+        logger.info("Alert email sent successfully.")
+    except Exception as e:
+        logger.error(f"Failed to send alert email: {str(e)}")
+
+    
 
 

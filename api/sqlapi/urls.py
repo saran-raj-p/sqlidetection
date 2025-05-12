@@ -1,5 +1,5 @@
 from django.urls import path,include
-from sqlapi import views
+from . import views
 urlpatterns = [
     path('register/',view=views.register,name="register"),
     path('login/',view=views.login_view,name="login"),

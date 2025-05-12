@@ -1,0 +1,10 @@
+<html>
+<body>
+<h2>Write Your Comment</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Enter your comment" required>
+        <button type="submit">Submit</button>
+    </form>
+<body>
+</html>

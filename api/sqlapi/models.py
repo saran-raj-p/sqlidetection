@@ -10,4 +10,4 @@ class alert(models.Model):
     
     username = models.CharField(max_length=255)
     data = models.TextField()
-    time = models.DateTimeField(auto_now=True)
+    time = models.DateTimeField(auto_now_add=True)
